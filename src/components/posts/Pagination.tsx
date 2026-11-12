@@ -1,3 +1,17 @@
+"use client";
+
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Pagination as PaginationRoot,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+} from "@/components/ui/pagination";
+import { usePagination } from "@/hooks/use-pagination";
+
+const ITEMS_TO_DISPLAY = 5; // จำนวนเลขหน้าที่แสดงพร้อมกัน
+
 type Props = {
   page: number;
   totalPages: number;
@@ -5,41 +19,81 @@ type Props = {
 };
 
 export default function Pagination({ page, totalPages, onPageChange }: Props) {
-  if (totalPages <= 0) return null;
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    currentPage: page,
+    totalPages,
+    paginationItemsToDisplay: ITEMS_TO_DISPLAY,
+  });
+
+  if (totalPages <= 1) return null;
+
+  const renderPage = (p: number) => (
+    <PaginationItem key={p}>
+      <Button
+        variant={p === page ? "default" : "outline"}
+        size="icon"
+        aria-label={`Go to page ${p}`}
+        aria-current={p === page ? "page" : undefined}
+        onClick={() => onPageChange(p)}
+      >
+        {p}
+      </Button>
+    </PaginationItem>
+  );
 
   return (
-    <nav className="mt-6 flex flex-wrap items-center gap-2">
-      <button
-        className="rounded border px-3 py-1 disabled:opacity-40"
-        onClick={() => onPageChange(page - 1)}
-        disabled={page === 1}
-      >
-        Prev
-      </button>
+    <div className="mt-8 space-y-2">
+      <PaginationRoot>
+        <PaginationContent className="flex-wrap justify-center">
+          <PaginationItem>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Previous page"
+              onClick={() => onPageChange(page - 1)}
+              disabled={page === 1}
+            >
+              <ChevronLeftIcon />
+            </Button>
+          </PaginationItem>
 
-      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-        <button
-          key={p}
-          className={`rounded border px-3 py-1 ${
-            p === page ? "bg-blue-600 text-white" : ""
-          }`}
-          onClick={() => onPageChange(p)}
-        >
-          {p}
-        </button>
-      ))}
+          {showLeftEllipsis && (
+            <>
+              {renderPage(1)}
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            </>
+          )}
 
-      <button
-        className="rounded border px-3 py-1 disabled:opacity-40"
-        onClick={() => onPageChange(page + 1)}
-        disabled={page >= totalPages}
-      >
-        Next
-      </button>
+          {pages.map(renderPage)}
 
-      <span className="ml-2 text-gray-500">
+          {showRightEllipsis && (
+            <>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              {renderPage(totalPages)}
+            </>
+          )}
+
+          <PaginationItem>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Next page"
+              onClick={() => onPageChange(page + 1)}
+              disabled={page >= totalPages}
+            >
+              <ChevronRightIcon />
+            </Button>
+          </PaginationItem>
+        </PaginationContent>
+      </PaginationRoot>
+
+      <p className="text-center text-sm text-muted-foreground">
         หน้า {page} จาก {totalPages}
-      </span>
-    </nav>
+      </p>
+    </div>
   );
 }

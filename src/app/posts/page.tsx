@@ -24,8 +24,8 @@ export default function PostsPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <h1 className="mb-4 text-2xl font-bold">Posts</h1>
+    <main className="mx-auto w-full max-w-2xl p-6">
+      <h1 className="mb-4 text-2xl font-bold">Posts 100 lists</h1>
 
       <PageSizeSelect
         value={limit}

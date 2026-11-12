@@ -5,6 +5,7 @@ import axios from "axios";
 import { getPostsRange, Post } from "@/lib/api";
 import { CHUNK } from "./constants";
 import PostCard from "./PostCard";
+import PostSkeleton from "./PostSkeleton";
 
 type Props = {
   page: number;
@@ -21,10 +22,15 @@ export default function PostFeed({ page, limit, onTotal }: Props) {
   const [attempt, setAttempt] = useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  // จำนวนรายการที่หน้านี้ควรมี (หน้าสุดท้ายอาจน้อยกว่า limit)
   const pageCount = Math.max(0, Math.min(limit, total - (page - 1) * limit));
   const loading = !error && loadedChunks < chunk + 1;
   const hasMore = loadedChunks === 0 || items.length < pageCount;
 
+  // จำนวน skeleton ที่แสดงระหว่างโหลด
+  const skeletonCount = Math.max(1, Math.min(CHUNK, limit - items.length));
+
+  // 1) โหลดข้อมูลทีละก้อน
   useEffect(() => {
     const controller = new AbortController();
     const offset = chunk * CHUNK;
@@ -45,6 +51,7 @@ export default function PostFeed({ page, limit, onTotal }: Props) {
     return () => controller.abort();
   }, [chunk, attempt, page, limit, onTotal]);
 
+  // 2) ตัวสังเกตท้ายลิสต์: เข้าจอ + ไม่ได้โหลดอยู่ + ยังมีเหลือ = ขอก้อนถัดไป
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -66,16 +73,21 @@ export default function PostFeed({ page, limit, onTotal }: Props) {
 
   return (
     <section>
-      <ul className="space-y-2">
-        {items.map((post) => (
-          <PostCard key={post.id} post={post} />
+      <ul className="space-y-3">
+        {items.map((post, i) => (
+          <PostCard key={post.id} post={post} index={i} />
         ))}
+
+        {loading &&
+          Array.from({ length: skeletonCount }, (_, i) => (
+            <PostSkeleton key={`skeleton-${i}`} />
+          ))}
       </ul>
 
-      {loading && <p className="mt-4 text-gray-500">กำลังโหลด...</p>}
+      {loading && <p className="sr-only">กำลังโหลด...</p>}
 
       {error && (
-        <p className="mt-4 text-red-600">
+        <p className="mt-4 text-destructive">
           โหลดข้อมูลไม่สำเร็จ{" "}
           <button className="underline" onClick={retry}>
             ลองใหม่
@@ -84,7 +96,7 @@ export default function PostFeed({ page, limit, onTotal }: Props) {
       )}
 
       {!hasMore && (
-        <p className="mt-4 text-gray-500">
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           แสดงครบ {items.length} รายการของหน้านี้แล้ว
         </p>
       )}
