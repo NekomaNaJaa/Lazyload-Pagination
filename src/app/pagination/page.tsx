@@ -7,6 +7,7 @@ import PostCard from "@/components/posts/PostCard";
 import PostSkeleton from "@/components/posts/PostSkeleton";
 import { PAGE_SIZE_OPTIONS } from "@/hooks/constants";
 import { usePaginatedPosts } from "@/hooks/use-paginated-posts";
+import JumpScare from "@/components/posts/JumpScare";
 
 export default function PaginationPage() {
   const {
@@ -23,6 +24,7 @@ export default function PaginationPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
+      <JumpScare />
       <div className="grid gap-4 sm:grid-cols-2">
         <Link href="/">
           <p className="text-red-600">← Get Back!</p>

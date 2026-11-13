@@ -5,6 +5,7 @@ import PostCard from "@/components/posts/PostCard";
 import PostSkeleton from "@/components/posts/PostSkeleton";
 import { LAZY_LOAD_CHUNK } from "@/hooks/constants";
 import { useLazyLoad } from "@/hooks/use-lazy-load";
+import JumpScare from "@/components/posts/JumpScare";
 
 export default function LazyLoadPage() {
   const {
@@ -20,6 +21,7 @@ export default function LazyLoadPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
+      <JumpScare />
       <div className="grid gap-4 sm:grid-cols-2">
         <Link href="/">
           <p className="text-red-600">← Get Back!</p>
