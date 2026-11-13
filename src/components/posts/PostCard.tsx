@@ -2,18 +2,16 @@
 
 import { motion } from "framer-motion";
 import type { Post } from "@/lib/api";
-import { CHUNK } from "./constants";
 
-// สีวนตามเลขโพสต์ (ใบถัดไปได้สีถัดไป)
 const CARD_COLORS = ["#00C9A7", "#FFB800", "#FF3D71", "#1E86FF", "#8B5CF6"];
+const GROUP_SIZE = 10;
 
 type Props = {
   post: Post;
-  index: number; // ลำดับในหน้านี้ ใช้คำนวณหน่วงเวลาตอนโผล่
+  delay?: number;
 };
 
-export default function PostCard({ post, index }: Props) {
-  const GROUP_SIZE = 10;
+export default function PostCard({ post, delay = 0 }: Props) {
   const color =
     CARD_COLORS[Math.floor((post.id - 1) / GROUP_SIZE) % CARD_COLORS.length];
 
@@ -21,13 +19,7 @@ export default function PostCard({ post, index }: Props) {
     <motion.li
       initial={{ opacity: 0, y: 24, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{
-        type: "spring",
-        stiffness: 350,
-        damping: 40,
-        // ไล่โผล่ทีละใบภายในก้อนเดียวกัน
-        delay: (index % CHUNK) * 0.07,
-      }}
+      transition={{ type: "spring", stiffness: 350, damping: 40, delay }}
       whileHover={{
         scale: 1.02,
         transition: { type: "spring", stiffness: 400, damping: 25, delay: 0 },

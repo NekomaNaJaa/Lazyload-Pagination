@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/pagination";
 import { usePagination } from "@/hooks/use-pagination";
 
-const ITEMS_TO_DISPLAY = 5; // จำนวนเลขหน้าที่แสดงพร้อมกัน
+const ITEMS_TO_DISPLAY = 5;
 
 type Props = {
   page: number;
